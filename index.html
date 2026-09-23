@@ -2,19 +2,293 @@
 <html lang="en">
 
 <head>
+    <!-- Tells the browser to use modern character encoding -->
     <meta charset="UTF-8">
+
+    <!-- Makes the website responsive on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Text shown in the browser tab -->
     <title>Personal Expense Tracker</title>
 
+    <!-- Connect our CSS file -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <h1>Personal Expense Tracker</h1>
+    <!-- ==================== HEADER ==================== -->
+    <header class="header">
+        <div class="container">
+            <h1>Personal Expense Tracker</h1>
+            <p>Track your income, expenses, and spending habits.</p>
+        </div>
+    </header>
 
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="container">
+
+        <!-- ==================== SUMMARY CARDS ==================== -->
+        <section class="summary-section">
+
+            <div class="summary-card balance-card">
+                <h2>Balance</h2>
+                <p id="balance">₹0.00</p>
+            </div>
+
+            <div class="summary-card income-card">
+                <h2>Total Income</h2>
+                <p id="total-income">₹0.00</p>
+            </div>
+
+            <div class="summary-card expense-card">
+                <h2>Total Expenses</h2>
+                <p id="total-expenses">₹0.00</p>
+            </div>
+
+        </section>
+
+
+        <!-- ==================== TRANSACTION FORM ==================== -->
+        <section class="form-section">
+
+            <h2>Add Transaction</h2>
+
+            <form id="transaction-form">
+
+                <!-- Title -->
+                <div class="form-group">
+                    <label for="title">Title</label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        placeholder="e.g. Grocery shopping"
+                        required
+                    >
+                </div>
+
+
+                <!-- Amount -->
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        name="amount"
+                        placeholder="e.g. 500"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+                </div>
+
+
+                <!-- Transaction Type -->
+                <div class="form-group">
+                    <label for="type">Type</label>
+
+                    <select id="type" name="type" required>
+                        <option value="">Select type</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label for="category">Category</label>
+
+                    <select id="category" name="category" required>
+                        <option value="">Select category</option>
+
+                        <option value="food">Food</option>
+                        <option value="transport">Transport</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="bills">Bills</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="education">Education</option>
+                        <option value="salary">Salary</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+
+                <!-- Date -->
+                <div class="form-group">
+                    <label for="date">Date</label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        required
+                    >
+                </div>
+
+
+                <!-- Description -->
+                <div class="form-group full-width">
+                    <label for="description">Description</label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="3"
+                        placeholder="Add an optional description..."
+                    ></textarea>
+                </div>
+
+
+                <!-- Submit button -->
+                <div class="form-actions full-width">
+                    <button type="submit" id="submit-button">
+                        Add Transaction
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- ==================== FILTERS ==================== -->
+        <section class="filter-section">
+
+            <h2>Search & Filter</h2>
+
+            <div class="filters">
+
+                <!-- Search -->
+                <div class="form-group">
+                    <label for="search">Search</label>
+
+                    <input
+                        type="search"
+                        id="search"
+                        placeholder="Search transactions..."
+                    >
+                </div>
+
+
+                <!-- Filter by Type -->
+                <div class="form-group">
+                    <label for="filter-type">Type</label>
+
+                    <select id="filter-type">
+                        <option value="all">All Types</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+
+
+                <!-- Filter by Category -->
+                <div class="form-group">
+                    <label for="filter-category">Category</label>
+
+                    <select id="filter-category">
+                        <option value="all">All Categories</option>
+                        <option value="food">Food</option>
+                        <option value="transport">Transport</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="bills">Bills</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="education">Education</option>
+                        <option value="salary">Salary</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================== RECENT TRANSACTIONS ==================== -->
+        <section class="transactions-section">
+
+            <div class="section-header">
+                <h2>Recent Transactions</h2>
+
+                <span id="transaction-count">
+                    0 transactions
+                </span>
+            </div>
+
+
+            <!-- JavaScript will insert transactions here -->
+            <div id="transaction-list">
+
+                <!-- Empty state -->
+                <div id="empty-state">
+                    <h3>No transactions yet</h3>
+                    <p>
+                        Add your first income or expense using the form above.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================== STATISTICS ==================== -->
+        <section class="statistics-section">
+
+            <h2>Spending Statistics</h2>
+
+            <div class="statistics-grid">
+
+                <!-- Category summary -->
+                <div class="statistics-card">
+
+                    <h3>Expenses by Category</h3>
+
+                    <div id="category-summary">
+                        <p>No expense data available yet.</p>
+                    </div>
+
+                </div>
+
+
+                <!-- Chart -->
+                <div class="statistics-card">
+
+                    <h3>Spending Overview</h3>
+
+                    <div class="chart-container">
+                        <canvas id="expense-chart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+
+        <div class="container">
+            <p>
+                Personal Expense Tracker &copy; 2026
+            </p>
+        </div>
+
+    </footer>
+
+
+    <!-- Connect JavaScript -->
     <script src="js/app.js"></script>
+
 </body>
 
 </html>
