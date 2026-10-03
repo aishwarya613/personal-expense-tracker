@@ -1,9 +1,17 @@
+// =====================================================
+// FORMAT AMOUNT
+// =====================================================
+
 function formatAmount(amount) {
 
     return `₹${Number(amount).toFixed(2)}`;
 
 }
 
+
+// =====================================================
+// CREATE TRANSACTION HTML
+// =====================================================
 
 function createTransactionHTML(transaction) {
 
@@ -71,4 +79,51 @@ function createTransactionHTML(transaction) {
 
         </div>
     `;
+
+}
+
+
+// =====================================================
+// CREATE CATEGORY SUMMARY HTML
+// =====================================================
+
+function createCategorySummaryHTML(categoryTotals) {
+
+    const categories =
+        Object.keys(categoryTotals);
+
+
+    if (categories.length === 0) {
+
+        return `
+            <p class="no-transactions">
+                No expense data available.
+            </p>
+        `;
+
+    }
+
+
+    return categories.map(
+        function(category) {
+
+            return `
+                <div class="category-summary-item">
+
+                    <span class="category-name">
+                        ${category}
+                    </span>
+
+                    <strong>
+                        ${formatAmount(
+                            categoryTotals[category]
+                        )}
+                    </strong>
+
+                </div>
+            `;
+
+        }
+    ).join("");
+
 }

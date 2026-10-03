@@ -2,7 +2,8 @@
 // DOM ELEMENTS
 // =====================================================
 
-const formError = document.getElementById("form-error");
+const formError =
+    document.getElementById("form-error");
 
 const balanceElement =
     document.getElementById("balance");
@@ -15,6 +16,9 @@ const totalExpensesElement =
 
 const transactionsList =
     document.getElementById("transactions-list");
+
+const categorySummary =
+    document.getElementById("category-summary");
 
 const transactionForm =
     document.getElementById("transaction-form");
@@ -37,9 +41,6 @@ const dateInput =
 const descriptionInput =
     document.getElementById("description");
 
-
-// Search and filters
-
 const searchInput =
     document.getElementById("search");
 
@@ -49,6 +50,9 @@ const typeFilter =
 const categoryFilter =
     document.getElementById("category-filter");
 
+const exportButton =
+    document.getElementById("export-button");
+
 
 console.log("Expense Tracker is running!");
 
@@ -57,18 +61,22 @@ console.log("Expense Tracker is running!");
 // PREVENT MOUSE WHEEL FROM CHANGING AMOUNT
 // =====================================================
 
-amountInput.addEventListener("wheel", function(event) {
+amountInput.addEventListener(
+    "wheel",
+    function(event) {
 
-    event.preventDefault();
+        event.preventDefault();
 
-});
+    }
+);
 
 
 // =====================================================
 // APPLICATION STATE
 // =====================================================
 
-let transactions = loadTransactions();
+let transactions =
+    loadTransactions();
 
 let editingTransactionId = null;
 
@@ -84,21 +92,27 @@ function calculateTotals() {
     let totalExpenses = 0;
 
 
-    transactions.forEach(function(transaction) {
+    transactions.forEach(
+        function(transaction) {
 
-        if (transaction.type === "income") {
+            if (transaction.type === "income") {
 
-            totalIncome += Number(transaction.amount);
+                totalIncome +=
+                    Number(transaction.amount);
+
+            }
+
+            else if (
+                transaction.type === "expense"
+            ) {
+
+                totalExpenses +=
+                    Number(transaction.amount);
+
+            }
 
         }
-
-        else if (transaction.type === "expense") {
-
-            totalExpenses += Number(transaction.amount);
-
-        }
-
-    });
+    );
 
 
     const balance =
@@ -115,11 +129,84 @@ function calculateTotals() {
         `₹${balance.toFixed(2)}`;
 
 
-    console.log("Total Income:", totalIncome);
+    console.log(
+        "Total Income:",
+        totalIncome
+    );
 
-    console.log("Total Expenses:", totalExpenses);
+    console.log(
+        "Total Expenses:",
+        totalExpenses
+    );
 
-    console.log("Balance:", balance);
+    console.log(
+        "Balance:",
+        balance
+    );
+
+}
+
+
+// =====================================================
+// CALCULATE CATEGORY TOTALS
+// =====================================================
+
+function calculateCategoryTotals() {
+
+    const categoryTotals = {};
+
+
+    transactions.forEach(
+        function(transaction) {
+
+            // We only want expenses
+            if (transaction.type !== "expense") {
+                return;
+            }
+
+
+            const category =
+                transaction.category;
+
+
+            const amount =
+                Number(transaction.amount);
+
+
+            if (
+                categoryTotals[category] === undefined
+            ) {
+
+                categoryTotals[category] = 0;
+
+            }
+
+
+            categoryTotals[category] += amount;
+
+        }
+    );
+
+
+    return categoryTotals;
+
+}
+
+
+// =====================================================
+// RENDER CATEGORY SUMMARY
+// =====================================================
+
+function renderCategorySummary() {
+
+    const categoryTotals =
+        calculateCategoryTotals();
+
+
+    categorySummary.innerHTML =
+        createCategorySummaryHTML(
+            categoryTotals
+        );
 
 }
 
@@ -131,7 +218,9 @@ function calculateTotals() {
 function getFilteredTransactions() {
 
     const searchText =
-        searchInput.value.toLowerCase().trim();
+        searchInput.value
+            .toLowerCase()
+            .trim();
 
     const selectedType =
         typeFilter.value;
@@ -140,31 +229,34 @@ function getFilteredTransactions() {
         categoryFilter.value;
 
 
-    return transactions.filter(function(transaction) {
+    return transactions.filter(
+        function(transaction) {
 
-        const matchesSearch =
-            transaction.title
-                .toLowerCase()
-                .includes(searchText);
-
-
-        const matchesType =
-            selectedType === "all" ||
-            transaction.type === selectedType;
+            const matchesSearch =
+                transaction.title
+                    .toLowerCase()
+                    .includes(searchText);
 
 
-        const matchesCategory =
-            selectedCategory === "all" ||
-            transaction.category === selectedCategory;
+            const matchesType =
+                selectedType === "all" ||
+                transaction.type === selectedType;
 
 
-        return (
-            matchesSearch &&
-            matchesType &&
-            matchesCategory
-        );
+            const matchesCategory =
+                selectedCategory === "all" ||
+                transaction.category ===
+                    selectedCategory;
 
-    });
+
+            return (
+                matchesSearch &&
+                matchesType &&
+                matchesCategory
+            );
+
+        }
+    );
 
 }
 
@@ -182,7 +274,9 @@ function renderTransactions() {
         getFilteredTransactions();
 
 
-    if (filteredTransactions.length === 0) {
+    if (
+        filteredTransactions.length === 0
+    ) {
 
         transactionsList.innerHTML = `
             <p class="no-transactions">
@@ -195,12 +289,16 @@ function renderTransactions() {
     }
 
 
-    filteredTransactions.forEach(function(transaction) {
+    filteredTransactions.forEach(
+        function(transaction) {
 
-        transactionsList.innerHTML +=
-            createTransactionHTML(transaction);
+            transactionsList.innerHTML +=
+                createTransactionHTML(
+                    transaction
+                );
 
-    });
+        }
+    );
 
 
     // =================================================
@@ -208,73 +306,81 @@ function renderTransactions() {
     // =================================================
 
     const editButtons =
-        document.querySelectorAll(".edit-button");
+        document.querySelectorAll(
+            ".edit-button"
+        );
 
 
-    editButtons.forEach(function(button) {
+    editButtons.forEach(
+        function(button) {
 
-        button.addEventListener("click", function() {
+            button.addEventListener(
+                "click",
+                function() {
 
-            const id =
-                Number(button.dataset.id);
-
-
-            const transaction =
-                transactions.find(function(transaction) {
-
-                    return transaction.id === id;
-
-                });
+                    const id =
+                        Number(button.dataset.id);
 
 
-            if (!transaction) {
-                return;
-            }
+                    const transaction =
+                        transactions.find(
+                            function(transaction) {
+
+                                return (
+                                    transaction.id ===
+                                    id
+                                );
+
+                            }
+                        );
 
 
-            console.log(
-                "Transaction found:",
-                transaction
+                    if (!transaction) {
+                        return;
+                    }
+
+
+                    titleInput.value =
+                        transaction.title;
+
+                    amountInput.value =
+                        transaction.amount;
+
+                    typeInput.value =
+                        transaction.type;
+
+                    categoryInput.value =
+                        transaction.category;
+
+                    dateInput.value =
+                        transaction.date;
+
+                    descriptionInput.value =
+                        transaction.description;
+
+
+                    editingTransactionId =
+                        transaction.id;
+
+
+                    document
+                        .getElementById(
+                            "form-title"
+                        )
+                        .textContent =
+                        "Edit Transaction";
+
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+
+                }
             );
 
-
-            titleInput.value =
-                transaction.title;
-
-            amountInput.value =
-                transaction.amount;
-
-            typeInput.value =
-                transaction.type;
-
-            categoryInput.value =
-                transaction.category;
-
-            dateInput.value =
-                transaction.date;
-
-            descriptionInput.value =
-                transaction.description;
-
-
-            editingTransactionId =
-                transaction.id;
-
-
-            document
-                .getElementById("form-title")
-                .textContent =
-                "Edit Transaction";
-
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-        });
-
-    });
+        }
+    );
 
 
     // =================================================
@@ -282,47 +388,61 @@ function renderTransactions() {
     // =================================================
 
     const deleteButtons =
-        document.querySelectorAll(".delete-button");
+        document.querySelectorAll(
+            ".delete-button"
+        );
 
 
-    deleteButtons.forEach(function(button) {
+    deleteButtons.forEach(
+        function(button) {
 
-        button.addEventListener("click", function() {
+            button.addEventListener(
+                "click",
+                function() {
 
-            const id =
-                Number(button.dataset.id);
-
-
-            const shouldDelete =
-                confirm(
-                    "Are you sure you want to delete this transaction?"
-                );
+                    const id =
+                        Number(button.dataset.id);
 
 
-            if (!shouldDelete) {
-                return;
-            }
+                    const shouldDelete =
+                        confirm(
+                            "Are you sure you want to delete this transaction?"
+                        );
 
 
-            transactions =
-                transactions.filter(
-                    function(transaction) {
-
-                        return transaction.id !== id;
-
+                    if (!shouldDelete) {
+                        return;
                     }
-                );
 
 
-            saveTransactions(transactions);
+                    transactions =
+                        transactions.filter(
+                            function(transaction) {
 
-            calculateTotals();
+                                return (
+                                    transaction.id !==
+                                    id
+                                );
 
-            renderTransactions();
+                            }
+                        );
 
-        });
 
-    });
+                    saveTransactions(
+                        transactions
+                    );
+
+                    calculateTotals();
+
+                    renderTransactions();
+
+                    renderCategorySummary();
+
+                }
+            );
+
+        }
+    );
 
 }
 
@@ -336,7 +456,6 @@ transactionForm.addEventListener(
     function(event) {
 
         event.preventDefault();
-
 
         formError.textContent = "";
 
@@ -374,7 +493,10 @@ transactionForm.addEventListener(
         }
 
 
-        if (amount <= 0 || isNaN(amount)) {
+        if (
+            amount <= 0 ||
+            isNaN(amount)
+        ) {
 
             formError.textContent =
                 "Amount must be greater than 0.";
@@ -444,9 +566,13 @@ transactionForm.addEventListener(
         // ADD OR UPDATE
         // =================================================
 
-        if (editingTransactionId === null) {
+        if (
+            editingTransactionId === null
+        ) {
 
-            transactions.push(transaction);
+            transactions.push(
+                transaction
+            );
 
         }
 
@@ -473,11 +599,14 @@ transactionForm.addEventListener(
             }
 
 
-            editingTransactionId = null;
+            editingTransactionId =
+                null;
 
 
             document
-                .getElementById("form-title")
+                .getElementById(
+                    "form-title"
+                )
                 .textContent =
                 "Add Transaction";
 
@@ -488,7 +617,9 @@ transactionForm.addEventListener(
         // SAVE + UPDATE UI
         // =================================================
 
-        saveTransactions(transactions);
+        saveTransactions(
+            transactions
+        );
 
         console.log(transactions);
 
@@ -496,8 +627,8 @@ transactionForm.addEventListener(
 
         renderTransactions();
 
+        renderCategorySummary();
 
-        // Clear form
 
         transactionForm.reset();
 
@@ -548,19 +679,8 @@ categoryFilter.addEventListener(
 
 
 // =====================================================
-// INITIAL PAGE LOAD
+// EXPORT CSV
 // =====================================================
-
-calculateTotals();
-
-renderTransactions();
-// =====================================================
-// EXPORT TRANSACTIONS TO CSV
-// =====================================================
-
-const exportButton =
-    document.getElementById("export-button");
-
 
 exportButton.addEventListener(
     "click",
@@ -568,7 +688,9 @@ exportButton.addEventListener(
 
         if (transactions.length === 0) {
 
-            alert("No transactions to export.");
+            alert(
+                "No transactions to export."
+            );
 
             return;
 
@@ -585,40 +707,44 @@ exportButton.addEventListener(
         ];
 
 
-        const rows = transactions.map(
-            function(transaction) {
+        const rows =
+            transactions.map(
+                function(transaction) {
 
-                return [
-                    transaction.title,
-                    transaction.amount,
-                    transaction.type,
-                    transaction.category,
-                    transaction.date,
-                    transaction.description
-                ];
+                    return [
+                        transaction.title,
+                        transaction.amount,
+                        transaction.type,
+                        transaction.category,
+                        transaction.date,
+                        transaction.description
+                    ];
 
-            }
-        );
+                }
+            );
 
 
         const csvContent = [
             headers,
             ...rows
         ]
-            .map(function(row) {
+            .map(
+                function(row) {
 
-                return row.join(",");
+                    return row.join(",");
 
-            })
+                }
+            )
             .join("\n");
 
 
-        const blob = new Blob(
-            [csvContent],
-            {
-                type: "text/csv"
-            }
-        );
+        const blob =
+            new Blob(
+                [csvContent],
+                {
+                    type: "text/csv"
+                }
+            );
 
 
         const url =
@@ -642,3 +768,14 @@ exportButton.addEventListener(
 
     }
 );
+
+
+// =====================================================
+// INITIAL PAGE LOAD
+// =====================================================
+
+calculateTotals();
+
+renderTransactions();
+
+renderCategorySummary();
