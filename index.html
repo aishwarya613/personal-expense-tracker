@@ -204,11 +204,41 @@
 
 <section class="card">
 
-    <h2>Spending by Category</h2>
+    <div class="section-header">
+
+        <h2>Spending by Category</h2>
+
+        <div class="date-filter-container">
+
+            <label for="date-filter">
+                Period
+            </label>
+
+            <select id="date-filter">
+
+                <option value="all">
+                    All Time
+                </option>
+
+                <option value="this-month">
+                    This Month
+                </option>
+
+                <option value="last-month">
+                    Last Month
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
 
     <div id="category-summary">
         <!-- Category summaries will be added by JavaScript -->
     </div>
+
 
     <div class="chart-container">
         <canvas id="spending-chart"></canvas>

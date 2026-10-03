@@ -23,6 +23,9 @@ const categorySummary =
 const spendingChartCanvas =
     document.getElementById("spending-chart");
 
+const dateFilter =
+    document.getElementById("date-filter");
+
 const transactionForm =
     document.getElementById("transaction-form");
 
@@ -68,6 +71,16 @@ let spendingChart = null;
 
 
 // =====================================================
+// APPLICATION STATE
+// =====================================================
+
+let transactions =
+    loadTransactions();
+
+let editingTransactionId = null;
+
+
+// =====================================================
 // PREVENT MOUSE WHEEL FROM CHANGING AMOUNT
 // =====================================================
 
@@ -79,16 +92,6 @@ amountInput.addEventListener(
 
     }
 );
-
-
-// =====================================================
-// APPLICATION STATE
-// =====================================================
-
-let transactions =
-    loadTransactions();
-
-let editingTransactionId = null;
 
 
 // =====================================================
@@ -158,6 +161,107 @@ function calculateTotals() {
 
 
 // =====================================================
+// CHECK DATE FILTER
+// =====================================================
+
+function isTransactionInSelectedPeriod(transaction) {
+
+    const selectedPeriod =
+        dateFilter.value;
+
+
+    if (selectedPeriod === "all") {
+
+        return true;
+
+    }
+
+
+    const transactionDate =
+        new Date(
+            transaction.date + "T00:00:00"
+        );
+
+
+    const today =
+        new Date();
+
+
+    if (
+        selectedPeriod === "this-month"
+    ) {
+
+        return (
+            transactionDate.getFullYear() ===
+                today.getFullYear()
+
+            &&
+
+            transactionDate.getMonth() ===
+                today.getMonth()
+        );
+
+    }
+
+
+    if (
+        selectedPeriod === "last-month"
+    ) {
+
+        const firstDayOfThisMonth =
+            new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                1
+            );
+
+
+        const firstDayOfLastMonth =
+            new Date(
+                today.getFullYear(),
+                today.getMonth() - 1,
+                1
+            );
+
+
+        return (
+            transactionDate >=
+                firstDayOfLastMonth
+
+            &&
+
+            transactionDate <
+                firstDayOfThisMonth
+        );
+
+    }
+
+
+    return true;
+
+}
+
+
+// =====================================================
+// GET TRANSACTIONS FOR SELECTED PERIOD
+// =====================================================
+
+function getPeriodTransactions() {
+
+    return transactions.filter(
+        function(transaction) {
+
+            return isTransactionInSelectedPeriod(
+                transaction
+            );
+
+        }
+    );
+
+}
+
+
+// =====================================================
 // CALCULATE CATEGORY TOTALS
 // =====================================================
 
@@ -166,7 +270,11 @@ function calculateCategoryTotals() {
     const categoryTotals = {};
 
 
-    transactions.forEach(
+    const periodTransactions =
+        getPeriodTransactions();
+
+
+    periodTransactions.forEach(
         function(transaction) {
 
             if (transaction.type !== "expense") {
@@ -239,18 +347,14 @@ function renderSpendingChart() {
         Object.values(categoryTotals);
 
 
-    // Destroy the previous chart
-    // before creating a new one.
-
     if (spendingChart !== null) {
 
         spendingChart.destroy();
 
+        spendingChart = null;
+
     }
 
-
-    // If there are no expenses,
-    // don't create a chart.
 
     if (categories.length === 0) {
 
@@ -332,8 +436,7 @@ function getFilteredTransactions() {
 
             const matchesType =
                 selectedType === "all" ||
-                transaction.type ===
-                    selectedType;
+                transaction.type === selectedType;
 
 
             const matchesCategory =
@@ -574,10 +677,6 @@ transactionForm.addEventListener(
             descriptionInput.value.trim();
 
 
-        // =================================================
-        // VALIDATION
-        // =================================================
-
         if (title === "") {
 
             formError.textContent =
@@ -631,10 +730,6 @@ transactionForm.addEventListener(
         }
 
 
-        // =================================================
-        // CREATE TRANSACTION OBJECT
-        // =================================================
-
         const transaction = {
 
             id:
@@ -656,10 +751,6 @@ transactionForm.addEventListener(
 
         };
 
-
-        // =================================================
-        // ADD OR UPDATE
-        // =================================================
 
         if (
             editingTransactionId === null
@@ -707,10 +798,6 @@ transactionForm.addEventListener(
 
         }
 
-
-        // =================================================
-        // SAVE + UPDATE UI
-        // =================================================
 
         saveTransactions(
             transactions
@@ -772,6 +859,22 @@ categoryFilter.addEventListener(
     function() {
 
         renderTransactions();
+
+    }
+);
+
+
+// =====================================================
+// DATE FILTER
+// =====================================================
+
+dateFilter.addEventListener(
+    "change",
+    function() {
+
+        renderCategorySummary();
+
+        renderSpendingChart();
 
     }
 );
