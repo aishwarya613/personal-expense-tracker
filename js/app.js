@@ -20,6 +20,9 @@ const transactionsList =
 const categorySummary =
     document.getElementById("category-summary");
 
+const spendingChartCanvas =
+    document.getElementById("spending-chart");
+
 const transactionForm =
     document.getElementById("transaction-form");
 
@@ -55,6 +58,13 @@ const exportButton =
 
 
 console.log("Expense Tracker is running!");
+
+
+// =====================================================
+// CHART VARIABLE
+// =====================================================
+
+let spendingChart = null;
 
 
 // =====================================================
@@ -159,7 +169,6 @@ function calculateCategoryTotals() {
     transactions.forEach(
         function(transaction) {
 
-            // We only want expenses
             if (transaction.type !== "expense") {
                 return;
             }
@@ -168,13 +177,13 @@ function calculateCategoryTotals() {
             const category =
                 transaction.category;
 
-
             const amount =
                 Number(transaction.amount);
 
 
             if (
-                categoryTotals[category] === undefined
+                categoryTotals[category] ===
+                undefined
             ) {
 
                 categoryTotals[category] = 0;
@@ -182,7 +191,8 @@ function calculateCategoryTotals() {
             }
 
 
-            categoryTotals[category] += amount;
+            categoryTotals[category] +=
+                amount;
 
         }
     );
@@ -206,6 +216,88 @@ function renderCategorySummary() {
     categorySummary.innerHTML =
         createCategorySummaryHTML(
             categoryTotals
+        );
+
+}
+
+
+// =====================================================
+// RENDER SPENDING CHART
+// =====================================================
+
+function renderSpendingChart() {
+
+    const categoryTotals =
+        calculateCategoryTotals();
+
+
+    const categories =
+        Object.keys(categoryTotals);
+
+
+    const amounts =
+        Object.values(categoryTotals);
+
+
+    // Destroy the previous chart
+    // before creating a new one.
+
+    if (spendingChart !== null) {
+
+        spendingChart.destroy();
+
+    }
+
+
+    // If there are no expenses,
+    // don't create a chart.
+
+    if (categories.length === 0) {
+
+        return;
+
+    }
+
+
+    spendingChart =
+        new Chart(
+            spendingChartCanvas,
+            {
+                type: "doughnut",
+
+                data: {
+
+                    labels: categories,
+
+                    datasets: [
+                        {
+                            label:
+                                "Spending",
+
+                            data:
+                                amounts
+                        }
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "bottom"
+
+                        }
+
+                    }
+
+                }
+
+            }
         );
 
 }
@@ -240,7 +332,8 @@ function getFilteredTransactions() {
 
             const matchesType =
                 selectedType === "all" ||
-                transaction.type === selectedType;
+                transaction.type ===
+                    selectedType;
 
 
             const matchesCategory =
@@ -438,6 +531,8 @@ function renderTransactions() {
 
                     renderCategorySummary();
 
+                    renderSpendingChart();
+
                 }
             );
 
@@ -621,13 +716,17 @@ transactionForm.addEventListener(
             transactions
         );
 
+
         console.log(transactions);
+
 
         calculateTotals();
 
         renderTransactions();
 
         renderCategorySummary();
+
+        renderSpendingChart();
 
 
         transactionForm.reset();
@@ -779,3 +878,5 @@ calculateTotals();
 renderTransactions();
 
 renderCategorySummary();
+
+renderSpendingChart();

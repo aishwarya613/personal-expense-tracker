@@ -398,3 +398,13 @@ button {
     text-align: center;
     padding: 20px;
 }
+/* =====================================================
+   SPENDING CHART
+   ===================================================== */
+
+.chart-container {
+    max-width: 450px;
+    height: 350px;
+    margin: 30px auto 0;
+    position: relative;
+}
