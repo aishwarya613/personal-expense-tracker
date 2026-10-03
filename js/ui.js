@@ -1,32 +1,32 @@
-function renderTransactions() {
+function formatAmount(amount) {
 
-    transactionsList.innerHTML = "";
+    return `₹${Number(amount).toFixed(2)}`;
 
-    if (transactions.length === 0) {
-
-        transactionsList.innerHTML = `
-            <p class="empty-message">
-                No transactions yet.
-            </p>
-        `;
-
-        return;
-    }
+}
 
 
-    transactions.forEach(function(transaction) {
+function createTransactionHTML(transaction) {
 
-        const transactionElement = document.createElement("div");
+    const amountClass =
+        transaction.type === "income"
+            ? "income"
+            : "expense";
 
-        transactionElement.classList.add(
-            "transaction-item"
-        );
+
+    const amountSign =
+        transaction.type === "income"
+            ? "+"
+            : "-";
 
 
-        transactionElement.innerHTML = `
+    return `
+        <div class="transaction-item">
+
             <div class="transaction-info">
 
-                <h3>${transaction.title}</h3>
+                <h3>
+                    ${transaction.title}
+                </h3>
 
                 <p>
                     ${transaction.category}
@@ -36,7 +36,7 @@ function renderTransactions() {
 
                 ${
                     transaction.description
-                        ? `<p class="description">
+                        ? `<p class="transaction-description">
                             ${transaction.description}
                            </p>`
                         : ""
@@ -47,18 +47,13 @@ function renderTransactions() {
 
             <div class="transaction-actions">
 
-                <strong class="${transaction.type}">
-                    ${
-                        transaction.type === "income"
-                            ? "+"
-                            : "-"
-                    }
-                    ₹${transaction.amount.toFixed(2)}
+                <strong class="${amountClass}">
+                    ${amountSign}${formatAmount(transaction.amount)}
                 </strong>
 
 
                 <button
-                    class="edit-btn"
+                    class="edit-button"
                     data-id="${transaction.id}"
                 >
                     Edit
@@ -66,19 +61,14 @@ function renderTransactions() {
 
 
                 <button
-                    class="delete-btn"
+                    class="delete-button"
                     data-id="${transaction.id}"
                 >
                     Delete
                 </button>
 
             </div>
-        `;
 
-
-        transactionsList.appendChild(
-            transactionElement
-        );
-
-    });
+        </div>
+    `;
 }

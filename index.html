@@ -11,30 +11,35 @@
 
 <body>
 
+    <!-- ================= HEADER ================= -->
+
     <header class="header">
         <div class="container">
             <h1>Personal Expense Tracker</h1>
-            <p>Track your income, expenses, and balance</p>
+            <p>Track your income, expenses, and spending habits.</p>
         </div>
     </header>
 
 
+    <!-- ================= MAIN ================= -->
+
     <main class="container">
 
-        <!-- Dashboard -->
-        <section class="dashboard">
+        <!-- ================= SUMMARY ================= -->
 
-            <div class="summary-card balance-card">
+        <section class="summary-grid">
+
+            <div class="summary-card">
                 <h3>Balance</h3>
                 <p id="balance">₹0.00</p>
             </div>
 
-            <div class="summary-card income-card">
+            <div class="summary-card">
                 <h3>Total Income</h3>
                 <p id="total-income">₹0.00</p>
             </div>
 
-            <div class="summary-card expense-card">
+            <div class="summary-card">
                 <h3>Total Expenses</h3>
                 <p id="total-expenses">₹0.00</p>
             </div>
@@ -42,31 +47,37 @@
         </section>
 
 
-        <!-- Transaction Form -->
+        <!-- ================= ADD TRANSACTION ================= -->
+
         <section class="card">
 
-            <h2>Add Transaction</h2>
+            <h2 id="form-title">Add Transaction</h2>
 
             <form id="transaction-form">
 
                 <p id="form-error"></p>
 
                 <!-- Title -->
+
                 <div class="form-group">
+
                     <label for="title">Title</label>
 
                     <input
                         type="text"
                         id="title"
                         name="title"
-                        placeholder="e.g. Grocery"
+                        placeholder="e.g. Grocery shopping"
                         required
                     >
+
                 </div>
 
 
                 <!-- Amount -->
+
                 <div class="form-group">
+
                     <label for="amount">Amount</label>
 
                     <input
@@ -74,45 +85,84 @@
                         id="amount"
                         name="amount"
                         placeholder="e.g. 500"
-                        min="0"
+                        min="0.01"
                         step="0.01"
                         required
                     >
+
                 </div>
 
 
                 <!-- Type -->
+
                 <div class="form-group">
+
                     <label for="type">Type</label>
 
                     <select id="type" name="type" required>
+
                         <option value="">Select type</option>
-                        <option value="income">Income</option>
-                        <option value="expense">Expense</option>
+
+                        <option value="income">
+                            Income
+                        </option>
+
+                        <option value="expense">
+                            Expense
+                        </option>
+
                     </select>
+
                 </div>
 
 
                 <!-- Category -->
+
                 <div class="form-group">
+
                     <label for="category">Category</label>
 
                     <select id="category" name="category" required>
+
                         <option value="">Select category</option>
-                        <option value="food">Food</option>
-                        <option value="education">Education</option>
-                        <option value="transport">Transport</option>
-                        <option value="shopping">Shopping</option>
-                        <option value="bills">Bills</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="health">Health</option>
-                        <option value="other">Other</option>
+
+                        <option value="food">
+                            Food
+                        </option>
+
+                        <option value="education">
+                            Education
+                        </option>
+
+                        <option value="bills">
+                            Bills
+                        </option>
+
+                        <option value="transport">
+                            Transport
+                        </option>
+
+                        <option value="shopping">
+                            Shopping
+                        </option>
+
+                        <option value="salary">
+                            Salary
+                        </option>
+
+                        <option value="other">
+                            Other
+                        </option>
+
                     </select>
+
                 </div>
 
 
                 <!-- Date -->
+
                 <div class="form-group">
+
                     <label for="date">Date</label>
 
                     <input
@@ -121,24 +171,29 @@
                         name="date"
                         required
                     >
+
                 </div>
 
 
                 <!-- Description -->
+
                 <div class="form-group">
-                    <label for="description">Description</label>
+
+                    <label for="description">
+                        Description
+                    </label>
 
                     <textarea
                         id="description"
                         name="description"
-                        placeholder="Optional description"
-                        rows="3"
+                        placeholder="Add an optional description..."
                     ></textarea>
+
                 </div>
 
 
-                <button type="submit" id="submit-button">
-                    Add Transaction
+                <button type="submit" class="primary-button">
+                    Save Transaction
                 </button>
 
             </form>
@@ -146,23 +201,133 @@
         </section>
 
 
-        <!-- Recent Transactions -->
+        <!-- ================= RECENT TRANSACTIONS ================= -->
+
         <section class="card">
 
-            <div class="section-header">
-                <h2>Recent Transactions</h2>
+            <h2>Recent Transactions</h2>
+            <button type="button" id="export-button" class="export-button">
+    Export CSV
+</button>
+
+
+            <!-- Search -->
+
+            <div class="form-group">
+
+                <label for="search">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="search"
+                    placeholder="Search transactions..."
+                >
+
             </div>
 
-            <div id="transactions-list">
-                <!-- Transactions will be inserted by JavaScript -->
+
+            <!-- Type Filter -->
+
+            <div class="form-group">
+
+                <label for="type-filter">
+                    Type
+                </label>
+
+                <select id="type-filter">
+
+                    <option value="all">
+                        All Types
+                    </option>
+
+                    <option value="income">
+                        Income
+                    </option>
+
+                    <option value="expense">
+                        Expense
+                    </option>
+
+                </select>
+
             </div>
+
+
+            <!-- Category Filter -->
+
+            <div class="form-group">
+
+                <label for="category-filter">
+                    Category
+                </label>
+
+                <select id="category-filter">
+
+                    <option value="all">
+                        All Categories
+                    </option>
+
+                    <option value="food">
+                        Food
+                    </option>
+
+                    <option value="education">
+                        Education
+                    </option>
+
+                    <option value="bills">
+                        Bills
+                    </option>
+
+                    <option value="transport">
+                        Transport
+                    </option>
+
+                    <option value="shopping">
+                        Shopping
+                    </option>
+
+                    <option value="salary">
+                        Salary
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Transactions -->
+
+            <div id="transactions-list"></div>
 
         </section>
 
     </main>
 
 
-    <!-- JavaScript -->
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+            <p>
+                Personal Expense Tracker
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
     <script src="js/storage.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
