@@ -23,6 +23,9 @@ const categorySummary =
 const spendingChartCanvas =
     document.getElementById("spending-chart");
 
+const monthlyInsight =
+    document.getElementById("monthly-insight");
+
 const dateFilter =
     document.getElementById("date-filter");
 
@@ -161,16 +164,260 @@ function calculateTotals() {
 
 
 // =====================================================
+// GET MONTH RANGE
+// =====================================================
+
+function getMonthRange(offset) {
+
+    const today =
+        new Date();
+
+
+    const year =
+        today.getFullYear();
+
+    const month =
+        today.getMonth();
+
+
+    const startDate =
+        new Date(
+            year,
+            month + offset,
+            1
+        );
+
+
+    const endDate =
+        new Date(
+            year,
+            month + offset + 1,
+            1
+        );
+
+
+    return {
+        startDate: startDate,
+        endDate: endDate
+    };
+
+}
+
+
+// =====================================================
+// CALCULATE SPENDING FOR A PERIOD
+// =====================================================
+
+function calculateMonthlySpending(offset) {
+
+    const monthRange =
+        getMonthRange(offset);
+
+
+    let total =
+        0;
+
+
+    transactions.forEach(
+        function(transaction) {
+
+            if (
+                transaction.type !==
+                "expense"
+            ) {
+
+                return;
+
+            }
+
+
+            const transactionDate =
+                new Date(
+                    transaction.date +
+                    "T00:00:00"
+                );
+
+
+            if (
+                transactionDate >=
+                    monthRange.startDate &&
+
+                transactionDate <
+                    monthRange.endDate
+            ) {
+
+                total +=
+                    Number(transaction.amount);
+
+            }
+
+        }
+    );
+
+
+    return total;
+
+}
+
+
+// =====================================================
+// RENDER MONTHLY INSIGHT
+// =====================================================
+
+function renderMonthlyInsight() {
+
+    const thisMonth =
+        calculateMonthlySpending(0);
+
+
+    const lastMonth =
+        calculateMonthlySpending(-1);
+
+
+    if (
+        thisMonth === 0 &&
+        lastMonth === 0
+    ) {
+
+        monthlyInsight.innerHTML = `
+            <div class="insight-content">
+
+                <strong>
+                    No spending data yet
+                </strong>
+
+                <span>
+                    Add expenses to see your
+                    monthly spending insight.
+                </span>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    let comparisonHTML = "";
+
+
+    if (
+        lastMonth === 0 &&
+        thisMonth > 0
+    ) {
+
+        comparisonHTML = `
+            <span class="insight-neutral">
+                No spending recorded last month
+            </span>
+        `;
+
+    }
+
+    else if (
+        thisMonth > lastMonth
+    ) {
+
+        const increase =
+            (
+                (
+                    thisMonth -
+                    lastMonth
+                ) /
+                lastMonth
+            ) * 100;
+
+
+        comparisonHTML = `
+            <span class="insight-increase">
+                ↑ ${increase.toFixed(1)}%
+                more than last month
+            </span>
+        `;
+
+    }
+
+    else if (
+        thisMonth < lastMonth
+    ) {
+
+        const decrease =
+            (
+                (
+                    lastMonth -
+                    thisMonth
+                ) /
+                lastMonth
+            ) * 100;
+
+
+        comparisonHTML = `
+            <span class="insight-decrease">
+                ↓ ${decrease.toFixed(1)}%
+                less than last month
+            </span>
+        `;
+
+    }
+
+    else {
+
+        comparisonHTML = `
+            <span class="insight-neutral">
+                Same as last month
+            </span>
+        `;
+
+    }
+
+
+    monthlyInsight.innerHTML = `
+        <div class="insight-content">
+
+            <span class="insight-label">
+                This Month
+            </span>
+
+            <strong class="insight-amount">
+                ₹${thisMonth.toFixed(2)}
+            </strong>
+
+            ${comparisonHTML}
+
+        </div>
+
+        <div class="insight-previous">
+
+            <span>
+                Last Month
+            </span>
+
+            <strong>
+                ₹${lastMonth.toFixed(2)}
+            </strong>
+
+        </div>
+    `;
+
+}
+
+
+// =====================================================
 // CHECK DATE FILTER
 // =====================================================
 
-function isTransactionInSelectedPeriod(transaction) {
+function isTransactionInSelectedPeriod(
+    transaction
+) {
 
     const selectedPeriod =
         dateFilter.value;
 
 
-    if (selectedPeriod === "all") {
+    if (
+        selectedPeriod === "all"
+    ) {
 
         return true;
 
@@ -179,7 +426,8 @@ function isTransactionInSelectedPeriod(transaction) {
 
     const transactionDate =
         new Date(
-            transaction.date + "T00:00:00"
+            transaction.date +
+            "T00:00:00"
         );
 
 
@@ -188,7 +436,8 @@ function isTransactionInSelectedPeriod(transaction) {
 
 
     if (
-        selectedPeriod === "this-month"
+        selectedPeriod ===
+        "this-month"
     ) {
 
         return (
@@ -205,7 +454,8 @@ function isTransactionInSelectedPeriod(transaction) {
 
 
     if (
-        selectedPeriod === "last-month"
+        selectedPeriod ===
+        "last-month"
     ) {
 
         const firstDayOfThisMonth =
@@ -277,13 +527,19 @@ function calculateCategoryTotals() {
     periodTransactions.forEach(
         function(transaction) {
 
-            if (transaction.type !== "expense") {
+            if (
+                transaction.type !==
+                "expense"
+            ) {
+
                 return;
+
             }
 
 
             const category =
                 transaction.category;
+
 
             const amount =
                 Number(transaction.amount);
@@ -347,7 +603,9 @@ function renderSpendingChart() {
         Object.values(categoryTotals);
 
 
-    if (spendingChart !== null) {
+    if (
+        spendingChart !== null
+    ) {
 
         spendingChart.destroy();
 
@@ -356,7 +614,9 @@ function renderSpendingChart() {
     }
 
 
-    if (categories.length === 0) {
+    if (
+        categories.length === 0
+    ) {
 
         return;
 
@@ -367,6 +627,7 @@ function renderSpendingChart() {
         new Chart(
             spendingChartCanvas,
             {
+
                 type: "doughnut",
 
                 data: {
@@ -393,7 +654,8 @@ function renderSpendingChart() {
 
                         legend: {
 
-                            position: "bottom"
+                            position:
+                                "bottom"
 
                         }
 
@@ -418,8 +680,10 @@ function getFilteredTransactions() {
             .toLowerCase()
             .trim();
 
+
     const selectedType =
         typeFilter.value;
+
 
     const selectedCategory =
         categoryFilter.value;
@@ -436,11 +700,13 @@ function getFilteredTransactions() {
 
             const matchesType =
                 selectedType === "all" ||
-                transaction.type === selectedType;
+                transaction.type ===
+                    selectedType;
 
 
             const matchesCategory =
-                selectedCategory === "all" ||
+                selectedCategory ===
+                    "all" ||
                 transaction.category ===
                     selectedCategory;
 
@@ -515,7 +781,9 @@ function renderTransactions() {
                 function() {
 
                     const id =
-                        Number(button.dataset.id);
+                        Number(
+                            button.dataset.id
+                        );
 
 
                     const transaction =
@@ -531,8 +799,12 @@ function renderTransactions() {
                         );
 
 
-                    if (!transaction) {
+                    if (
+                        !transaction
+                    ) {
+
                         return;
+
                     }
 
 
@@ -568,8 +840,12 @@ function renderTransactions() {
 
 
                     window.scrollTo({
+
                         top: 0,
-                        behavior: "smooth"
+
+                        behavior:
+                            "smooth"
+
                     });
 
                 }
@@ -597,7 +873,9 @@ function renderTransactions() {
                 function() {
 
                     const id =
-                        Number(button.dataset.id);
+                        Number(
+                            button.dataset.id
+                        );
 
 
                     const shouldDelete =
@@ -606,8 +884,12 @@ function renderTransactions() {
                         );
 
 
-                    if (!shouldDelete) {
+                    if (
+                        !shouldDelete
+                    ) {
+
                         return;
+
                     }
 
 
@@ -628,6 +910,7 @@ function renderTransactions() {
                         transactions
                     );
 
+
                     calculateTotals();
 
                     renderTransactions();
@@ -635,6 +918,8 @@ function renderTransactions() {
                     renderCategorySummary();
 
                     renderSpendingChart();
+
+                    renderMonthlyInsight();
 
                 }
             );
@@ -661,23 +946,36 @@ transactionForm.addEventListener(
         const title =
             titleInput.value.trim();
 
+
         const amount =
-            Number(amountInput.value);
+            Number(
+                amountInput.value
+            );
+
 
         const type =
             typeInput.value;
 
+
         const category =
             categoryInput.value;
 
+
         const date =
             dateInput.value;
+
 
         const description =
             descriptionInput.value.trim();
 
 
-        if (title === "") {
+        // =================================================
+        // VALIDATION
+        // =================================================
+
+        if (
+            title === ""
+        ) {
 
             formError.textContent =
                 "Please enter a title.";
@@ -700,7 +998,9 @@ transactionForm.addEventListener(
         }
 
 
-        if (type === "") {
+        if (
+            type === ""
+        ) {
 
             formError.textContent =
                 "Please select a transaction type.";
@@ -710,7 +1010,9 @@ transactionForm.addEventListener(
         }
 
 
-        if (category === "") {
+        if (
+            category === ""
+        ) {
 
             formError.textContent =
                 "Please select a category.";
@@ -720,7 +1022,9 @@ transactionForm.addEventListener(
         }
 
 
-        if (date === "") {
+        if (
+            date === ""
+        ) {
 
             formError.textContent =
                 "Please select a date.";
@@ -729,6 +1033,10 @@ transactionForm.addEventListener(
 
         }
 
+
+        // =================================================
+        // CREATE TRANSACTION OBJECT
+        // =================================================
 
         const transaction = {
 
@@ -751,6 +1059,10 @@ transactionForm.addEventListener(
 
         };
 
+
+        // =================================================
+        // ADD OR UPDATE
+        // =================================================
 
         if (
             editingTransactionId === null
@@ -777,7 +1089,9 @@ transactionForm.addEventListener(
                 );
 
 
-            if (index !== -1) {
+            if (
+                index !== -1
+            ) {
 
                 transactions[index] =
                     transaction;
@@ -799,12 +1113,18 @@ transactionForm.addEventListener(
         }
 
 
+        // =================================================
+        // SAVE + UPDATE UI
+        // =================================================
+
         saveTransactions(
             transactions
         );
 
 
-        console.log(transactions);
+        console.log(
+            transactions
+        );
 
 
         calculateTotals();
@@ -814,6 +1134,8 @@ transactionForm.addEventListener(
         renderCategorySummary();
 
         renderSpendingChart();
+
+        renderMonthlyInsight();
 
 
         transactionForm.reset();
@@ -888,7 +1210,9 @@ exportButton.addEventListener(
     "click",
     function() {
 
-        if (transactions.length === 0) {
+        if (
+            transactions.length === 0
+        ) {
 
             alert(
                 "No transactions to export."
@@ -959,6 +1283,7 @@ exportButton.addEventListener(
 
         link.href = url;
 
+
         link.download =
             "expense-transactions.csv";
 
@@ -983,3 +1308,5 @@ renderTransactions();
 renderCategorySummary();
 
 renderSpendingChart();
+
+renderMonthlyInsight();
